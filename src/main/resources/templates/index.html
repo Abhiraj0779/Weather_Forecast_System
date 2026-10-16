@@ -1,0 +1,194 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Forecast System</title>
+
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #dceeff, #f5f7ff);
+            color: #183153;
+        }
+
+        header {
+            background: #173f73;
+            color: white;
+            text-align: center;
+            padding: 24px 12px;
+        }
+
+        header h1 { margin: 0 0 10px; }
+
+        main {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 0 18px;
+        }
+
+        form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+
+        input {
+            flex: 1;
+            min-width: 0;
+            padding: 13px;
+            border: 1px solid #bdcde0;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 13px 18px;
+            border: none;
+            border-radius: 8px;
+            background: #1769aa;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .current, .forecast-card {
+            background: white;
+            border-radius: 14px;
+            padding: 22px;
+            box-shadow: 0 5px 18px #173f7315;
+        }
+
+        .current { text-align: center; }
+
+        .temperature {
+            font-size: 56px;
+            font-weight: bold;
+            margin: 14px 0;
+        }
+
+        .details {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .detail {
+            background: #edf5ff;
+            padding: 16px 8px;
+            border-radius: 10px;
+        }
+
+        .forecast {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .forecast-card {
+            text-align: center;
+            padding: 14px 8px;
+            overflow-wrap: anywhere;
+        }
+
+        .error {
+            color: #a00000;
+            background: #ffe5e5;
+            border-radius: 8px;
+            padding: 14px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: #526782;
+        }
+
+        @media (max-width: 650px) {
+            form { flex-wrap: wrap; }
+            form button { width: 100%; }
+            .details { grid-template-columns: 1fr; }
+            .forecast { grid-template-columns: repeat(2, 1fr); }
+            .temperature { font-size: 44px; }
+        }
+    </style>
+</head>
+
+<body>
+<header>
+    <h1>🌤️ Weather Forecast System</h1>
+    <p>Check current weather and the next five days</p>
+</header>
+
+<main>
+    <form action="/" method="get">
+        <input type="text"
+               name="city"
+               placeholder="Enter city name, e.g. Mumbai"
+               th:value="${city}"
+               required>
+        <button type="submit">Search Weather</button>
+    </form>
+
+    <p class="error"
+       th:if="${error != null}"
+       th:text="${error}"></p>
+
+    <section class="current" th:if="${weatherLoaded}">
+        <h2 th:text="${city}">Pune</h2>
+        <p>Current Weather</p>
+
+        <div class="temperature">
+            <span th:text="${#numbers.formatDecimal(temperature, 1, 1)}">28.0</span>°C
+        </div>
+
+        <h3 th:text="${description}">Clear sky</h3>
+
+        <div class="details">
+            <div class="detail">
+                <strong>💧 Humidity</strong>
+                <p><span th:text="${humidity}">60</span>%</p>
+            </div>
+
+            <div class="detail">
+                <strong>🌡️ Feels Like</strong>
+                <p><span th:text="${#numbers.formatDecimal(feelsLike, 1, 1)}">30</span>°C</p>
+            </div>
+
+            <div class="detail">
+                <strong>💨 Wind Speed</strong>
+                <p><span th:text="${#numbers.formatDecimal(wind, 1, 1)}">10</span> km/h</p>
+            </div>
+        </div>
+    </section>
+
+    <section th:if="${weatherLoaded}">
+        <h2>📅 Five-Day Forecast</h2>
+
+        <div class="forecast">
+            <article class="forecast-card" th:each="day : ${forecast}">
+                <strong th:text="${day.date}">Date</strong>
+                <p th:text="${day.description}">Sunny</p>
+                <p>
+                    High:
+                    <strong th:text="${#numbers.formatDecimal(day.maxTemp, 1, 1)}">30</strong>°C
+                </p>
+                <p>
+                    Low:
+                    <strong th:text="${#numbers.formatDecimal(day.minTemp, 1, 1)}">22</strong>°C
+                </p>
+            </article>
+        </div>
+    </section>
+</main>
+
+<footer>
+    Weather Forecast System | Java & Spring Boot
+</footer>
+</body>
+</html>
